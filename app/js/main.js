@@ -11,6 +11,8 @@ var xx = [];
 var yy = [];
 var zz = [];
 var BGMusic;
+var rightCannon;
+var leftCannon;
 
 var game = new Phaser.Game(fieldWidth, fieldHeight, Phaser.AUTO, 'phaser-example', { preload: preload, create: create, update: update });
 
@@ -19,6 +21,7 @@ function preload (){
   game.load.image('star', 'img/dust.png');
   game.load.image('aim', 'img/aim.png');
   game.load.image('enemy', 'img/enemy.png');
+  game.load.image('cannon', 'img/cannon.png');
   game.load.audio('bgMusic', 'audio/bgTreck.mp3');
 }
 
@@ -26,7 +29,14 @@ function create() {
   BGMusic = game.add.audio('bgMusic', "0.2", true);
   BGMusic.onDecoded.add(start, this);
 
+
   let background = game.add.sprite(0, 0, 'space');
+
+  rightCannon = game.add.sprite(fieldWidth - game.cache.getImage('cannon').height, fieldHeight - game.cache.getImage('cannon').height + 40, 'cannon');
+  rightCannon.anchor.setTo(0.1, 0.5);
+  leftCannon = game.add.sprite(0 + game.cache.getImage('cannon').height, fieldHeight - game.cache.getImage('cannon').height + 40, 'cannon');
+  leftCannon.anchor.setTo(0.1, 0.5);
+  // rightCannon.anchor.setTo(0.1, 0.5);
 
   if (game.renderType === Phaser.WEBGL)
       {
@@ -58,7 +68,7 @@ function create() {
 
 function enemy (){
   var mx = game.width - game.cache.getImage('enemy').width;
-  var my = game.height - game.cache.getImage('enemy').height;
+  var my = game.height - game.cache.getImage('enemy').height - 150;
   let sprite = game.add.sprite(game.rnd.integerInRange(0, mx), game.rnd.integerInRange(0, my), 'enemy');
   enemies.push(sprite);
   sprite.inputEnabled = true;
@@ -71,6 +81,9 @@ function requestLock() {
 }
 
 function update() {
+
+  rightCannon.rotation = game.physics.arcade.angleToPointer(rightCannon);
+  leftCannon.rotation = game.physics.arcade.angleToPointer(leftCannon);
 
   for(let i = 0; i < enemies.length; i ++){
     if(enemies[i].alive){
