@@ -2,6 +2,7 @@ var fieldWidth = 800;
 var fieldHeight = 600;
 var enemies = [];
 var counter = 0;
+var textCounter;
 
 var distance = 200;
 var speed = 4;
@@ -31,10 +32,13 @@ function preload (){
   game.load.image('laser', 'img/laser.png');
 
   game.load.audio('bgMusic', 'audio/bgTreck.mp3');
+  game.load.audio('shotSound', 'audio/shot.mp3');
+
+  game.load.bitmapFont('fontComsic', 'fonts/Merkur.png', 'fonts/Merkur.fnt');
 }
 
 function create() {
-  BGMusic = game.add.audio('bgMusic', "0.2", true);
+  BGMusic = game.add.audio('bgMusic');
   BGMusic.onDecoded.add(start, this);
 
   let background = game.add.sprite(0, 0, 'space');
@@ -56,11 +60,11 @@ function create() {
           addStart.addChild(star);
           stars.push(star);
       }
-
   weapon();
-
   game.time.events.loop(1000, enemy, this);
   game.time.events.loop(5000, clearDeadEnemies, this);
+
+  textCounter = game.add.bitmapText(250, 500, 'fontComsic', 'Score: ' + counter, 64);
 }
 
 function weapon (){
@@ -68,16 +72,16 @@ function weapon (){
   rightCannon.anchor.setTo(0.1, 0.5);
   leftCannon = game.add.sprite(0 + game.cache.getImage('cannon').height, fieldHeight - game.cache.getImage('cannon').height + 40, 'cannon');
   leftCannon.anchor.setTo(0.1, 0.5);
-  game.input.onDown.add(changeTexture, this);
-  function changeTexture (){
-    if (rightCannon.key === 'cannon'){
-      rightCannon.loadTexture('cannonShot', 0, false);
-      leftCannon.loadTexture('cannonShot', 0, false);
-    }
-   else{
-     rightCannon.loadTexture('cannon', 0, false);
-     leftCannon.loadTexture('cannon', 0, false);
-   }
+  game.input.onDown.add(shotEmulation, this);
+  function shotEmulation (){
+    let shotSound = game.add.audio('shotSound', 0.1);
+    shotSound.play();
+    leftCannon.loadTexture('cannonShot');
+    rightCannon.loadTexture('cannonShot');
+    setTimeout(function(){
+      leftCannon.loadTexture('cannon');
+      rightCannon.loadTexture('cannon');
+    },100)
   }
 }
 
@@ -85,7 +89,7 @@ function enemy (){
   let mx = game.width - game.cache.getImage('enemyLarge').width;
   let my = game.height - game.cache.getImage('enemyLarge').height - 150;
 
-  let sprite = game.add.sprite(game.rnd.integerInRange(0, mx), game.rnd.integerInRange(0, my), 'extraSmall');
+  let sprite = game.add.sprite(game.rnd.integerInRange(0, mx), game.rnd.integerInRange(15, my), 'extraSmall');
   enemies.push(sprite);
   function smallTex(){
     sprite.loadTexture('enemySmall');
@@ -100,7 +104,7 @@ function enemy (){
   sprite.events.onInputDown.add(destroySprite, this);
   setTimeout(smallTex, 1000);
   setTimeout(mediumTex, 3000);
-  setTimeout(largeTexture, 5000);
+  setTimeout(largeTexture, 6000);
 }
 
 function requestLock() {
@@ -146,7 +150,7 @@ function update() {
         stars[i].rotation += 0.1;
     }
 
-
+  textCounter.text = 'Score: ' + counter
 }
 
 function destroySprite (sprite) {
