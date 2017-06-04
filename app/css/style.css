@@ -1,1 +1,36 @@
-/* some cool staff in futures */
+@font-face {
+  font-family: space;
+  src: url(../fonts/space.otf);
+}
+
+body{
+  background-image: url(../img/page/bg.jpg);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.title{
+  font-family: space;
+  text-align: center;
+  font-size: 72px;
+  color: #E0E4F1;
+}
+.fieldGame{
+  width: 100%;
+  height: 80vh;
+}
+.desc{
+  color: #E0E4F1;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 30px 40px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  border-radius: 10px;
+}
+.wrapperPhaser{
+  margin-top: 30px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}

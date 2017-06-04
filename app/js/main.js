@@ -1,23 +1,23 @@
-var fieldWidth = 800;
-var fieldHeight = 600;
+var fieldWidth = document.getElementById('fieldGame').clientWidth;
+var fieldHeight = document.getElementById('fieldGame').clientHeight;
 var enemies = [];
 var counter = 0;
 var textCounter;
 
+/*stars*/
 var distance = 200;
 var speed = 4;
 var stars;
-
-
 var max = 200;
 var xx = [];
 var yy = [];
 var zz = [];
+
 var BGMusic;
 var rightCannon;
 var leftCannon;
 
-var game = new Phaser.Game(fieldWidth, fieldHeight, Phaser.AUTO, 'phaser-example', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(fieldWidth, fieldHeight, Phaser.AUTO, 'fieldGame', { preload: preload, create: create, update: update });
 
 function preload (){
   game.load.image('space', 'img/space.jpg');
@@ -34,7 +34,7 @@ function preload (){
   game.load.audio('bgMusic', 'audio/bgTreck.mp3');
   game.load.audio('shotSound', 'audio/shot.mp3');
 
-  game.load.bitmapFont('fontComsic', 'fonts/Merkur.png', 'fonts/Merkur.fnt');
+  game.load.bitmapFont('fontCosmic', 'fonts/Merkur.png', 'fonts/Merkur.fnt');
 }
 
 function create() {
@@ -64,7 +64,7 @@ function create() {
   game.time.events.loop(1000, enemy, this);
   game.time.events.loop(5000, clearDeadEnemies, this);
 
-  textCounter = game.add.bitmapText(250, 500, 'fontComsic', 'Score: ' + counter, 64);
+  textCounter = game.add.bitmapText(fieldWidth / 2, fieldHeight - 100, 'fontCosmic', 'Score: ' + counter, 64);
 }
 
 function weapon (){
