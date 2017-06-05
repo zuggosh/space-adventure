@@ -6,6 +6,7 @@ var enemies = [];
 var counter = 0;
 var textCounter;
 
+
 /*stars*/
 var distance = 200;
 var speed = 4;
@@ -46,7 +47,7 @@ function create() {
   music();
   stars();
   weapon();
-  game.time.events.loop(1000, enemy.create(), this);
+  game.time.events.loop(1000, Enemy().create(), this);
   game.time.events.loop(5000, clearDeadEnemies, this);
 
   textCounter = game.add.bitmapText(game.world.centerX, fieldHeight - 50, 'fontCosmic', 'Score: ' + counter, 64);
@@ -58,7 +59,7 @@ function requestLock() {
 }
 
 function update() {
-  enemy.enemyUpdate();
+  Enemy().enemyUpdate();
   spaceUpdate();
   weaponUpdate();
   textCounter.text = 'Score: ' + counter

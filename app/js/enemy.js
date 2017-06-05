@@ -1,6 +1,8 @@
 'use strict';
 
-function enemy (){
+
+
+function Enemy (){
   function create(){
     let mx = game.width - game.cache.getImage('enemyLarge').width;
     let my = game.height - game.cache.getImage('enemyLarge').height - 150;
@@ -49,7 +51,7 @@ function enemy (){
     }
   }
   return{
-    create,
-    enemyUpade
+    create: create,
+    enemyUpdate: enemyUpdate
   }
 }
