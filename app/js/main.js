@@ -1,3 +1,5 @@
+'use strict';
+
 var fieldWidth = document.getElementById('fieldGame').clientWidth;
 var fieldHeight = document.getElementById('fieldGame').clientHeight;
 var enemies = [];
@@ -13,13 +15,13 @@ var xx = [];
 var yy = [];
 var zz = [];
 
-var BGMusic;
 var rightCannon;
 var leftCannon;
 
 var game = new Phaser.Game(fieldWidth, fieldHeight, Phaser.AUTO, 'fieldGame', { preload: preload, create: create, update: update });
 
 function preload (){
+  /*image*/
   game.load.image('space', 'img/space.jpg');
   game.load.image('star', 'img/dust.png');
   game.load.image('aim', 'img/aim.png');
@@ -31,80 +33,24 @@ function preload (){
   game.load.image('cannonShot', 'img/cannonShot.png');
   game.load.image('laser', 'img/laser.png');
 
+  /*audio*/
   game.load.audio('bgMusic', 'audio/bgTreck.mp3');
   game.load.audio('shotSound', 'audio/shot.mp3');
 
+  /*fonts*/
   game.load.bitmapFont('fontCosmic', 'fonts/Merkur.png', 'fonts/Merkur.fnt');
 }
 
 function create() {
-  BGMusic = game.add.audio('bgMusic');
-  BGMusic.onDecoded.add(start, this);
-
   let background = game.add.sprite(0, 0, 'space');
-
-  /*STARS*/
-  if (game.renderType === Phaser.WEBGL)
-      {
-          max = 2000;
-      }
-      var addStart = game.add.spriteBatch();
-      stars = [];
-      for (var i = 0; i < max; i++)
-      {
-          xx[i] = Math.floor(Math.random() * 800) - 400;
-          yy[i] = Math.floor(Math.random() * 600) - 300;
-          zz[i] = Math.floor(Math.random() * 1700) - 100;
-          var star = game.make.sprite(0, 0, 'star');
-          star.anchor.set(0.5);
-          addStart.addChild(star);
-          stars.push(star);
-      }
+  music();
+  stars();
   weapon();
-  game.time.events.loop(1000, enemy, this);
+  game.time.events.loop(1000, enemy.create(), this);
   game.time.events.loop(5000, clearDeadEnemies, this);
 
-  textCounter = game.add.bitmapText(fieldWidth / 2, fieldHeight - 100, 'fontCosmic', 'Score: ' + counter, 64);
-}
-
-function weapon (){
-  rightCannon = game.add.sprite(fieldWidth - game.cache.getImage('cannon').height, fieldHeight - game.cache.getImage('cannon').height + 40, 'cannon');
-  rightCannon.anchor.setTo(0.1, 0.5);
-  leftCannon = game.add.sprite(0 + game.cache.getImage('cannon').height, fieldHeight - game.cache.getImage('cannon').height + 40, 'cannon');
-  leftCannon.anchor.setTo(0.1, 0.5);
-  game.input.onDown.add(shotEmulation, this);
-  function shotEmulation (){
-    let shotSound = game.add.audio('shotSound', 0.1);
-    shotSound.play();
-    leftCannon.loadTexture('cannonShot');
-    rightCannon.loadTexture('cannonShot');
-    setTimeout(function(){
-      leftCannon.loadTexture('cannon');
-      rightCannon.loadTexture('cannon');
-    },100)
-  }
-}
-
-function enemy (){
-  let mx = game.width - game.cache.getImage('enemyLarge').width;
-  let my = game.height - game.cache.getImage('enemyLarge').height - 150;
-
-  let sprite = game.add.sprite(game.rnd.integerInRange(0, mx), game.rnd.integerInRange(15, my), 'extraSmall');
-  enemies.push(sprite);
-  function smallTex(){
-    sprite.loadTexture('enemySmall');
-  }
-  function mediumTex(){
-    sprite.loadTexture('enemy');
-  }
-  function largeTexture(){
-    sprite.loadTexture('enemyLarge');
-  }
-  sprite.inputEnabled = true;
-  sprite.events.onInputDown.add(destroySprite, this);
-  setTimeout(smallTex, 1000);
-  setTimeout(mediumTex, 3000);
-  setTimeout(largeTexture, 6000);
+  textCounter = game.add.bitmapText(game.world.centerX, fieldHeight - 50, 'fontCosmic', 'Score: ' + counter, 64);
+  textCounter.anchor.set(0.5);
 }
 
 function requestLock() {
@@ -112,72 +58,12 @@ function requestLock() {
 }
 
 function update() {
-
-  rightCannon.rotation = game.physics.arcade.angleToPointer(rightCannon);
-  leftCannon.rotation = game.physics.arcade.angleToPointer(leftCannon);
-
-  for(let i = 0; i < enemies.length; i ++){
-    if(enemies[i].alive){
-      enemies[i].x += game.rnd.integerInRange(-2, 2);
-      enemies[i].y -= game.rnd.integerInRange(-2, 2);
-      if(enemies[i].x < -enemies[i].width){
-        enemies[i].x = game.world.width;
-      }
-      if(enemies[i].x > game.world.width){
-        enemies[i].x = 0;
-      }
-      if(enemies[i].y < -enemies[i].height){
-        enemies[i].y = game.world.height;
-      }
-      if(enemies[i].y > game.world.height){
-        enemies[i].y = 0;
-      }
-    }
-  }
-
-  for (var i = 0; i < max; i++)
-    {
-        stars[i].perspective = distance / (distance - zz[i]);
-        stars[i].x = game.world.centerX + xx[i] * stars[i].perspective;
-        stars[i].y = game.world.centerY + yy[i] * stars[i].perspective;
-        zz[i] += speed;
-        if (zz[i] > 290)
-        {
-            zz[i] -= 600;
-        }
-        stars[i].alpha = Math.min(stars[i].perspective / 2, 1);
-        stars[i].scale.set(stars[i].perspective / 2);
-        stars[i].rotation += 0.1;
-    }
-
+  enemy.enemyUpdate();
+  spaceUpdate();
+  weaponUpdate();
   textCounter.text = 'Score: ' + counter
-}
-
-function destroySprite (sprite) {
-  sprite.destroy();
-  counter++;
-  console.log(counter);
 }
 
 function clearDeadEnemies(){
   enemies = enemies.filter(sprite => sprite.alive);
-}
-
-function start() {
-  BGMusic.fadeIn(1000);
-}
-
-function moveEmulation(numX, numY){
-  if(numX === 1){
-    enemies[i].x -=2;
-  }
-  if(numX === 2){
-    enemies[i].x +=2;
-  }
-  if (numY === 1) {
-    enemies[i].y -=2;
-  }
-  if (numY === 2) {
-    enemies[i].y +=2;
-  }
 }
