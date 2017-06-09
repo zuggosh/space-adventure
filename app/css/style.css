@@ -21,11 +21,12 @@ body{
 }
 .desc{
   color: #E0E4F1;
+  font-family: space;
   background-color: rgba(0, 0, 0, 0.7);
   padding: 30px 40px;
   margin-top: 30px;
   margin-bottom: 30px;
-  border-radius: 10px;
+  /*border-radius: 10px;*/
 }
 .wrapperPhaser{
   margin-top: 30px;
@@ -36,4 +37,23 @@ body{
 }
 .darkArea{
   background-color: rgba(0, 0, 0, 0.7);
+}
+.but-wrapper{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 0;
+}
+.gameBut{
+  color: rgb(168, 230, 255);
+  font-family: space;
+  font-size: 24px;
+  padding: 10px 20px;
+  margin: 0 30px;
+  background-color: rgba(0, 0, 42, 0.0);
+  border: none;
+  transition: all 0.3s linear;
+}
+.gameBut:hover{
+  color: white;
 }

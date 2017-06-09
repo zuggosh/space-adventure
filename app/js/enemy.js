@@ -1,57 +1,62 @@
 'use strict';
 
-
-
-function Enemy (){
-  function create(){
-    let mx = game.width - game.cache.getImage('enemyLarge').width;
-    let my = game.height - game.cache.getImage('enemyLarge').height - 150;
-
-    let sprite = game.add.sprite(game.rnd.integerInRange(0, mx), game.rnd.integerInRange(15, my), 'extraSmall');
-    enemies.push(sprite);
-    function smallTex(){
-      sprite.loadTexture('enemySmall');
-    }
-    function mediumTex(){
-      sprite.loadTexture('enemy');
-    }
-    function largeTexture(){
-      sprite.loadTexture('enemyLarge');
-    }
-    sprite.inputEnabled = true;
-    sprite.events.onInputDown.add(destroySprite, this);
-    setTimeout(smallTex, 1000);
-    setTimeout(mediumTex, 3000);
-    setTimeout(largeTexture, 6000);
-
-    function destroySprite (sprite) {
-      sprite.destroy();
-      counter++;
-      console.log(counter);
-    }
+function Enemy(){
+  this.mx = game.width - game.cache.getImage('enemyLarge').width;
+  this.my = game.height - game.cache.getImage('enemyLarge').height - 150;
+  this.sprite = game.add.sprite(game.rnd.integerInRange(0, this.mx), game.rnd.integerInRange(15, this.my), 'extraSmall');
+  this.life = 0;
+  function destroySprite (sprite) {
+    this.sprite.destroy();
+    counter++;
   }
-  function enemyUpdate (){
-    for(let i = 0; i < enemies.length; i ++){
-      if(enemies[i].alive){
-        enemies[i].x += game.rnd.integerInRange(-2, 2);
-        enemies[i].y -= game.rnd.integerInRange(-2, 2);
-        if(enemies[i].x < -enemies[i].width){
-          enemies[i].x = game.world.width;
-        }
-        if(enemies[i].x > game.world.width){
-          enemies[i].x = 0;
-        }
-        if(enemies[i].y < -enemies[i].height){
-          enemies[i].y = game.world.height;
-        }
-        if(enemies[i].y > game.world.height){
-          enemies[i].y = 0;
-        }
+  this.update = () => {
+    this.life++;
+    if(this.sprite.alive){
+      this.sprite.x += game.rnd.integerInRange(-2, 2);
+      this.sprite.y -= game.rnd.integerInRange(-2, 2);
+      if(this.sprite.x < - this.sprite.width){
+        this.sprite.x = game.world.width;
       }
+      if(this.sprite.x > game.world.width){
+        this.sprite.x = 0;
+      }
+      if(this.sprite.y < -this.sprite.height){
+        this.sprite.y = game.world.height;
+      }
+      if(this.sprite.y > game.world.height){
+        this.sprite.y = 0;
+      }
+      if(this.life > 300 && this.life < 499){
+        this.sprite.loadTexture('enemySmall');
+      }
+      else if(this.life > 500){
+        this.sprite.loadTexture('enemy');
+      }
+      else if(this.life > 1000){
+        this.sprite.loadTexture('enemyLarge');
+      }
+      this.sprite.inputEnabled = true;
+      this.sprite.events.onInputDown.add(destroySprite, this);
     }
   }
   return{
-    create: create,
-    enemyUpdate: enemyUpdate
+    update: this.update
+  }
+}
+
+function createEnemy(){
+  if(counter > 5){
+    console.log('end');
+    enemies = 0;
+    speed = 15;
+    return;
+  }
+  var enemy = new Enemy();
+  enemies.push(enemy);
+}
+
+function enemyUpdate (){
+  for(let i = 0; i < enemies.length; i ++){
+    enemies[i].update();
   }
 }

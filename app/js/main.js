@@ -2,24 +2,20 @@
 
 var fieldWidth = document.getElementById('fieldGame').clientWidth;
 var fieldHeight = document.getElementById('fieldGame').clientHeight;
-var enemies = [];
+
 var counter = 0;
 var textCounter;
-
-
-/*stars*/
-var distance = 200;
+var enemies = [];
 var speed = 4;
-var stars;
-var max = 200;
-var xx = [];
-var yy = [];
-var zz = [];
 
-var rightCannon;
-var leftCannon;
+var stars = new Stars();
+var weapon = new Weapons();
 
-var game = new Phaser.Game(fieldWidth, fieldHeight, Phaser.AUTO, 'fieldGame', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(fieldWidth, fieldHeight, Phaser.AUTO, 'fieldGame', {
+            preload: preload,
+            create: create,
+            update: update
+            });
 
 function preload (){
   /*image*/
@@ -41,30 +37,22 @@ function preload (){
   /*fonts*/
   game.load.bitmapFont('fontCosmic', 'fonts/Merkur.png', 'fonts/Merkur.fnt');
 }
-
+gameControl();
 function create() {
+  game.paused = true;
   let background = game.add.sprite(0, 0, 'space');
   music();
-  stars();
-  weapon();
-  game.time.events.loop(1000, Enemy().create(), this);
-  game.time.events.loop(5000, clearDeadEnemies, this);
-
-  textCounter = game.add.bitmapText(game.world.centerX, fieldHeight - 50, 'fontCosmic', 'Score: ' + counter, 64);
-  textCounter.anchor.set(0.5);
+  stars.create();
+  weapon.create();
+  game.time.events.loop(1000, createEnemy, this);
+  counterText().create();
 }
-
 function requestLock() {
   game.input.mouse.requestPointerLock();
 }
-
 function update() {
-  Enemy().enemyUpdate();
-  spaceUpdate();
-  weaponUpdate();
-  textCounter.text = 'Score: ' + counter
-}
-
-function clearDeadEnemies(){
-  enemies = enemies.filter(sprite => sprite.alive);
+  enemyUpdate();
+  counterText().update();
+  stars.update();
+  weapon.update();
 }
