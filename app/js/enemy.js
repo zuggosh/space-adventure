@@ -39,15 +39,20 @@ function Enemy(){
       this.sprite.events.onInputDown.add(destroySprite, this);
     }
   }
+  this.end = () =>{
+    this.sprite.destroy();
+  }
   return{
-    update: this.update
+    update: this.update,
+    end: this.end
   }
 }
 
 function createEnemy(){
-  if(counter > 5){
-    console.log('end');
-    enemies = 0;
+  if(counter >= 100){
+    for(let i = 0; i < enemies.length; i++){
+      enemies[i].end();
+    }
     speed = 15;
     return;
   }
